@@ -68,6 +68,27 @@ class MemberTest {
         member.deactivate();
 
         assertThatThrownBy(member::deactivate).isInstanceOf(IllegalStateException.class);
+    }
 
+    @Test
+    void verifyPassword() {
+        assertThat(member.verifyPassword("secret", passwordEncoder)).isTrue();
+        assertThat(member.verifyPassword("hello", passwordEncoder)).isFalse();
+    }
+
+    @Test
+    void changeNickname() {
+        assertThat(member.getNickname()).isEqualTo("lovethefeel");
+
+        member.changeNickname("Pongdang");
+
+        assertThat(member.getNickname()).isEqualTo("Pongdang");
+    }
+
+    @Test
+    void changePassword() {
+        member.changePassword("verysecret", passwordEncoder);
+
+        assertThat(member.verifyPassword("verysecret", passwordEncoder)).isTrue();
     }
 }
