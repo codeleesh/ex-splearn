@@ -1,10 +1,13 @@
 package lovethefeel.splearn.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
+import static java.util.Objects.*;
 import static org.springframework.util.Assert.*;
 
 @Getter
@@ -18,16 +21,23 @@ public class Member {
 
     private MemberStatus status;
 
-    private Member(String email, String nickname, String passwordHash) {
-        this.email = Objects.requireNonNull(email);
-        this.nickname = Objects.requireNonNull(nickname);
-        this.passwordHash = Objects.requireNonNull(passwordHash);
+    private Member() {}
 
-        this.status = MemberStatus.PENDING;
-    }
+    public static Member create(MemberCreateRequest createRequest, PasswordEncoder passwordEncoder) {
+        Member member = new Member();
 
-    public static Member create(String email, String nickname, String password, PasswordEncoder passwordEncoder) {
-        return new Member(email, nickname, passwordEncoder.encode(password));
+        String email = createRequest.email();
+        Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            throw new IllegalArgumentException("이메일 형식이 바르지 않습니다 : " + email);
+        }
+
+        member.email = requireNonNull(createRequest.email());
+        member.nickname = requireNonNull(createRequest.nickname());
+        member.passwordHash = passwordEncoder.encode(requireNonNull(passwordEncoder.encode(createRequest.password())));
+
+        member.status = MemberStatus.PENDING;
+        return member;
     }
 
     public void activate() {
@@ -47,11 +57,11 @@ public class Member {
     }
 
     public void changeNickname(String nickname) {
-        this.nickname = Objects.requireNonNull(nickname);
+        this.nickname = requireNonNull(nickname);
     }
 
     public void changePassword(String password, PasswordEncoder passwordEncoder) {
-        this.passwordHash = passwordEncoder.encode(Objects.requireNonNull(password));
+        this.passwordHash = passwordEncoder.encode(requireNonNull(password));
     }
 
     public boolean isActive() {
