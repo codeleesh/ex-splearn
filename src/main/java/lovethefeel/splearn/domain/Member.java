@@ -13,7 +13,7 @@ import static org.springframework.util.Assert.*;
 @Getter
 @ToString
 public class Member {
-    private String email;
+    private Email email;
 
     private String nickname;
 
@@ -26,13 +26,7 @@ public class Member {
     public static Member create(MemberCreateRequest createRequest, PasswordEncoder passwordEncoder) {
         Member member = new Member();
 
-        String email = createRequest.email();
-        Pattern EMAIL_PATTERN = Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
-        if (!EMAIL_PATTERN.matcher(email).matches()) {
-            throw new IllegalArgumentException("이메일 형식이 바르지 않습니다 : " + email);
-        }
-
-        member.email = requireNonNull(createRequest.email());
+        member.email = new Email(requireNonNull(createRequest.email()));
         member.nickname = requireNonNull(createRequest.nickname());
         member.passwordHash = passwordEncoder.encode(requireNonNull(passwordEncoder.encode(createRequest.password())));
 
