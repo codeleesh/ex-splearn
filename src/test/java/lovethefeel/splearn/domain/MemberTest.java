@@ -7,12 +7,12 @@ import static org.assertj.core.api.Assertions.*;
 
 class MemberTest {
     Member member;
-    MemberCreateRequest createRequest;
+    MemberRegisterRequest createRequest;
     PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
-        this.createRequest = new MemberCreateRequest("lovethefeel@splearn.app", "lovethefeel", "secret");
+        this.createRequest = new MemberRegisterRequest("lovethefeel@splearn.app", "lovethefeel", "secret");
         this.passwordEncoder = new PasswordEncoder() {
             @Override
             public String encode(String password) {
@@ -24,12 +24,12 @@ class MemberTest {
                 return encode(password).equals(passwordHash);
             }
         };
-        member = Member.create(createRequest, passwordEncoder);
+        member = Member.register(createRequest, passwordEncoder);
     }
 
     @Test
-    void createMember() {
-        var member = Member.create(createRequest, passwordEncoder);
+    void registerMember() {
+        var member = Member.register(createRequest, passwordEncoder);
 
         assertThat(member.getStatus()).isEqualTo(MemberStatus.PENDING);
     }
@@ -103,9 +103,9 @@ class MemberTest {
 
     @Test
     void invalidEmail() {
-        assertThatThrownBy(() -> Member.create(new MemberCreateRequest("invalid email", "lovethefeel", "secret"), passwordEncoder))
+        assertThatThrownBy(() -> Member.register(new MemberRegisterRequest("invalid email", "lovethefeel", "secret"), passwordEncoder))
                 .isInstanceOf(IllegalArgumentException.class);
 
-        Member.create(new MemberCreateRequest("lovethefeel@gmail.com", "lovethefeel", "secret"), passwordEncoder);
+        Member.register(new MemberRegisterRequest("lovethefeel@gmail.com", "lovethefeel", "secret"), passwordEncoder);
     }
 }
