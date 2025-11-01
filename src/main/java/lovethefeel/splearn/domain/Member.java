@@ -1,11 +1,7 @@
 package lovethefeel.splearn.domain;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.util.Objects;
-import java.util.regex.Pattern;
 
 import static java.util.Objects.*;
 import static org.springframework.util.Assert.*;
